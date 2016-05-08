@@ -2,7 +2,8 @@
  var app = express();
  var port = process.env.PORT||8080;
  var pg = require('pg').native;
- var connectionString = "postgres://localhost:5432/tododb";
+ //var connectionString = "postgres://localhost:5432/tododb";
+ var connectionString = "postgres://byerspatr:xYzzY@depot:5432/tododb";
 
  var client = new pg.Client(connectionString);
  client.connect();
