@@ -2,43 +2,43 @@
  var app = express();
  var port = process.env.PORT||8080;
  var pg = require('pg').native;
- var connectionString = "postgres://byerspatr:xYzzY@depot:5432/byerspatr_nodejs";
- 
+ var connectionString = "postgres://localhost:5432/tododb";
+
  var client = new pg.Client(connectionString);
  client.connect();
- 
+
  var bodyParser = require('body-parser')
+ app.use(express.static(__dirname+'/webpage'))
  app.use(bodyParser.json());
  app.use(bodyParser.urlencoded({
    extended: true
  }));
- 
- app.get('/',function(req, res){
-   res.send('Hello World! \n');
- });
- 
- app.get('/test_database', function(request, response){
-   var query = client.query("SELECT * FROM todo;");
-   var results =[]
-   query.on('row', function(row){
-     results.push(row);
-   });
-   
-   query.on('end', function(){
-     response.json(results);
-   });
- });
- 
+
+
  app.get('/tasks', function (req, res){
-   res.send('This is a task.');
+   var query = client.query("SELECT * FROM todo;", function(error, data){
+     res.json(data.rows);
+   });
  });
- 
- app.post('/task', function (req,res){
-   var text = req.body;
-   var query = client.query("INSERT INTO todo (item) VALUES ('"+text+"')");
+
+ app.post('/tasks', function (req,res){
+   var text = req.body.disc;
+   var query = client.query("INSERT INTO todo (disc) VALUES ('"+text+"')");
    res.end();
  });
- 
+
+ app.delete('/tasks/:taskid', function (req,res){
+   var id = req.params.taskid;
+   var query = client.query("DELETE FROM todo WHERE id="+id+";");
+   res.end();
+ });
+
+ app.put('/tasks/:taskid', function (req, res){
+    var id = req.params.taskid;
+    var query = client.query("UPDATE todo SET complete= NOT complete WHERE id="+id+";");
+    res.end();
+ })
+
  app.listen(port, function(){
-   console.log('Example app listening on port 8080!');
+   console.log('"Mr Anderson" -Agent Smith');
  });
